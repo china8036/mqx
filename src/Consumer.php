@@ -38,7 +38,7 @@ class Consumer extends Mqx {
         }
         //if above not found the value continue to get other list value
         foreach ([Mqx::FIRST_LIST_KEY, Mqx::SECOND_LIST_KEY, Mqx::THIRD_LIST_KEY] as $key) {
-            $msg = $this->brppGetValueByListKeyWithTimeout($key, $timeout);
+            $msg = $this->brppGetValueByListKeyWithTimeout($key, 1);// always 1 second
             if ($msg !== false) {
                 return new Message($msg, $key);
             }

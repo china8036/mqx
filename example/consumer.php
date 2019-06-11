@@ -7,10 +7,15 @@
  */
 
 include '../src/Mqx.php';
+include '../src/Consumer.php';
+include '../src/Producer.php';
 include '../src/MqxException.php';
 
-$mqx = new Qqes\Mqx\Mqx('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
+$mqx = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
 
-$mqx->addFormatValue2Set(1, [1, 2, 3]);
 
-var_dump($mqx->getValueBySetAndLimit(1, 100));
+$values = $mqx->getValueBySetAndLimit(0, 100);
+foreach($values as $value => $score){
+    echo $value . PHP_EOL;
+    $mqx->removeBysetAndValue(0, $value);
+}

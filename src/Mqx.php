@@ -19,9 +19,37 @@ use RedisException;
 class Mqx {
 
     /**
-     * 
+     * set key pre
      */
     const MQ_SET_KEY_PRE = 'qqes_mqx_';
+    
+    /**
+     * class
+     */
+    const CLASS_KEY = 'class';
+    /**
+     * method
+     */
+    const METHOD_KEY = 'method';
+    
+    /**
+     * args
+     */
+    const ARGS_KEY = 'args';
+    
+    
+    /**
+     *  unqiue
+     */
+    const SET_VALUE_UNIQUE_KEY = 'id';
+    
+    
+    /**
+     *  value
+     */
+    const SET_VALUE_CALL_PARAMS_KEY = 'value';
+
+    
 
     /**
      * redis
@@ -30,7 +58,7 @@ class Mqx {
     protected $redis;
 
     /**
-     * $project
+     * project
      * @var string
      */
     private $project;
@@ -102,8 +130,8 @@ class Mqx {
      */
     public function addFormatValue2Set($set,  $value){
         $format_value = [
-            'unique' => md5(uniqid() . rand()),
-            'value' => $value
+            self::SET_VALUE_UNIQUE_KEY => md5(uniqid() . rand()),
+            self::SET_VALUE_CALL_PARAMS_KEY  => $value
         ];
        return $this->addValue2Set($set, $format_value);
     }
@@ -119,4 +147,14 @@ class Mqx {
         return $this->redis->zRangeByScore($this->genSetWithPre($set), 0, time(), array('withscores' => TRUE, 'limit' => array(0, $limit)));
     }
 
+    
+    /**
+     * 
+     * @param type $set
+     * @param type $value
+     * @return type
+     */
+    public function removeBysetAndValue($set, $value){
+        return $this->redis->zDelete($this->genSetWithPre($set), $value);
+    }
 }

@@ -64,7 +64,7 @@ class Mqx {
     private $project;
 
     //put your code here
-    function __construct($redis_host, $redis_port = 6379, $passwd = '', $project = '') {
+    function __construct($redis_host, $redis_port = 6379, $passwd = '', $project = 'default') {
         try {
             $this->redis = new Redis();
             $this->redis->connect($redis_host, $redis_port);
@@ -80,7 +80,7 @@ class Mqx {
     }
 
     /**
-     * 
+     * add vlaue 2 list
      * @param sting $key
      * @param mix $value
      * @return type
@@ -95,16 +95,16 @@ class Mqx {
   
 
     /**
-     * 
-     * @param type $key
-     * @return type
+     * gen format key
+     * @param int $key
+     * @return string
      */
     private function genKey($key) {
         return self::MQ_SET_KEY_PRE . $this->project . '_' . $key;
     }
 
     /**
-     * 
+     * add  value  to format key list
      * @param type $key
      * @param type $value
      * @return type
@@ -114,7 +114,7 @@ class Mqx {
     }
     
     /**
-     * 
+     *  add format value  to format key list
      * @param type $key
      * @param type $value
      * @return type
@@ -129,13 +129,33 @@ class Mqx {
     
 
     /**
-     * 
+     * get last value and move it to second key list
      * @param int $key
      * @param int $timeout
-     * @return type
+     * @return string|false
      */
-    public function getValueByKeyWithTimeout($key,  $timeout = 3000) {
+    public function brppGetValueByKeyWithTimeout($key,  $timeout = 3) {
         return $this->redis->bRPopLPush($this->genKey($key), $this->genKey($key + 1), $timeout);
+    }
+    
+    /**
+     *  get and remove the last value
+     * @param int $key
+     * @param int $timeout
+     */
+    public function getValueByKeyWithTimeout($key,  $timeout = 3){
+        return $this->redis->brPop($this->genKey($key), $timeout);
+    }
+    
+    
+    /**
+     * remove all match value in key list
+     * @param int $key
+     * @param string $value
+     * @return long|bool
+     */
+    public function delByKeyAndValue($key, $value){
+        return $this->redis->lRem($this->genKey($key), $value, 0);
     }
 
 }

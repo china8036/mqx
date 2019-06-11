@@ -16,4 +16,4 @@ $mqx = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@p
 
 $value = $mqx->getValueByKeyWithTimeout(0, 1);
 
-echo $value;
+var_dump($value);

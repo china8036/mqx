@@ -15,4 +15,8 @@ namespace Qqes\Mqx;
  */
 class Consumer extends Mqx {
     //put your code here
+    
+    public function getMsg(){
+        
+    }
 }

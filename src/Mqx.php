@@ -81,80 +81,61 @@ class Mqx {
 
     /**
      * 
-     * @param sting $set
-     * @param integer $score
+     * @param sting $key
      * @param mix $value
      * @return type
      */
-    private function addValue2SortSet($set, $score, $value) {
-        return $this->redis->zAdd($set, $score, $value);
-    }
-
-    /**
-     * 
-     * @param type $set
-     * @param type $value
-     * @return type
-     */
-    private function addValueWithTimeScore($set, $value) {
+    private function addValue2List($key, $value) {
         if (is_array($value)) {
             $value = serialize($value);
         }
-        return $this->addValue2SortSet($set, time(), $value);
+        return $this->redis->lPush($key,  $value);
     }
+
+  
 
     /**
      * 
-     * @param type $set
+     * @param type $key
      * @return type
      */
-    private function genSetWithPre($set) {
-        return self::MQ_SET_KEY_PRE . $this->project . '_' . $set;
+    private function genKey($key) {
+        return self::MQ_SET_KEY_PRE . $this->project . '_' . $key;
     }
 
     /**
      * 
-     * @param type $set
+     * @param type $key
      * @param type $value
      * @return type
      */
-    public function addValue2Set($set, $value) {
-        return $this->addValueWithTimeScore($this->genSetWithPre($set), $value);
+    public function addValue2FormatKey($key, $value) {
+        return $this->addValue2List($this->genKey($key), $value);
     }
     
     /**
      * 
-     * @param type $set
+     * @param type $key
      * @param type $value
      * @return type
      */
-    public function addFormatValue2Set($set,  $value){
+    public function addFormatValue2Key($key,  $value){
         $format_value = [
             self::SET_VALUE_UNIQUE_KEY => md5(uniqid() . rand()),
             self::SET_VALUE_CALL_PARAMS_KEY  => $value
         ];
-       return $this->addValue2Set($set, $format_value);
+       return $this->addValue2FormatKey($key, $format_value);
     }
     
 
     /**
      * 
-     * @param type $set
-     * @param type $limit
+     * @param int $key
+     * @param int $timeout
      * @return type
      */
-    public function getValueBySetAndLimit($set, $limit) {
-        return $this->redis->zRangeByScore($this->genSetWithPre($set), 0, time(), array('withscores' => TRUE, 'limit' => array(0, $limit)));
+    public function getValueByKeyWithTimeout($key,  $timeout = 3000) {
+        return $this->redis->bRPopLPush($this->genKey($key), $this->genKey($key + 1), $timeout);
     }
 
-    
-    /**
-     * 
-     * @param type $set
-     * @param type $value
-     * @return type
-     */
-    public function removeBysetAndValue($set, $value){
-        return $this->redis->zDelete($this->genSetWithPre($set), $value);
-    }
 }

@@ -17,13 +17,13 @@ class Producer extends Mqx{
     //put your code here
     
     /**
-     * queue
-     * @param string $class
-     * @param string $method
-     * @param array $args
+     * queue call task
+     * @param string $class class name
+     * @param string $method method name
+     * @param array $args  params
      * @return 1|0
      */
     public function queueCall($class, $method, array $args = []){
-        return $this->addFormatValue2Set(0, [Mqx::CLASS_KEY => $class, Mqx::METHOD_KEY => $method, Mqx::ARGS_KEY => $args]);
+        return $this->addFormatValue2Key(0, [Mqx::CLASS_KEY => $class, Mqx::METHOD_KEY => $method, Mqx::ARGS_KEY => $args]);
     }
 }

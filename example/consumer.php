@@ -14,8 +14,6 @@ include '../src/MqxException.php';
 $mqx = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
 
 
-$values = $mqx->getValueBySetAndLimit(0, 100);
-foreach($values as $value => $score){
-    echo $value . PHP_EOL;
-    $mqx->removeBysetAndValue(0, $value);
-}
+$value = $mqx->getValueByKeyWithTimeout(0, 1);
+
+echo $value;

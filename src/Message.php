@@ -26,14 +26,14 @@ class Message {
         $this->key = $key;
         $this->message = unserialize($payload);
         if ($this->message === false) {
-            throw new MqxException('wrong message format:' . $message, MqxException::MESSAGE_EXCEPTION);
+            throw new MqxException('wrong message format:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
         if (!isset($this->message[Mqx::SET_VALUE_UNIQUE_KEY])) {
-            throw new MqxException('not found id value:' . $message, MqxException::MESSAGE_EXCEPTION);
+            throw new MqxException('not found id value:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
         $this->id = $this->message[Mqx::SET_VALUE_UNIQUE_KEY];
         if (!isset($this->message[Mqx::SET_VALUE_CALL_PARAMS_KEY])) {
-            throw new MqxException('not found call_params value:' . $message, MqxException::MESSAGE_EXCEPTION);
+            throw new MqxException('not found call_params value:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
         $this->call_params = $this->message[Mqx::SET_VALUE_CALL_PARAMS_KEY];
     }

@@ -16,7 +16,12 @@ namespace Qqes\Mqx;
 class Consumer extends Mqx {
     //put your code here
     
-    public function getMsg(){
-        
+    /**
+     *  getMsg if not found value it will block util timeout or have value
+     * @param int $timeout  seconds
+     * @return type
+     */
+    public function getMsg($timeout = 3){
+       return $this->brppGetValueByKeyWithTimeout(0, $timeout);
     }
 }

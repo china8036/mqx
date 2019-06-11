@@ -14,6 +14,6 @@ include '../src/MqxException.php';
 $mqx = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
 
 
-$value = $mqx->getValueByKeyWithTimeout(0, 1);
+$value = $mqx->getMsg(1);
 
 var_dump($value);

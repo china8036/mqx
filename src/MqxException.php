@@ -17,6 +17,12 @@ use Exception;
 class MqxException extends Exception{
     //put your code here
     
-    const REDIS_CONNET_ERROR = -1;
+    /**
+     * redis connect error
+     */
+    const REDIS_CONNECT_ERROR = -1;
+    
+    
+    const MESSAGE_EXCEPTION = -2;
     
 }

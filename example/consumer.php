@@ -9,6 +9,7 @@
 include '../src/Mqx.php';
 include '../src/Consumer.php';
 include '../src/Producer.php';
+include '../src/Message.php';
 include '../src/MqxException.php';
 
 $mqx = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');

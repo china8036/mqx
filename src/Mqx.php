@@ -75,7 +75,7 @@ class Mqx {
             $this->redis->ping();
             $this->project = $project;
         } catch (RedisException $re) {
-            throw new MqxException($re->getMessage(), MqxException::REDIS_CONNET_ERROR);
+            throw new MqxException($re->getMessage(), MqxException::REDIS_CONNECT_ERROR);
         }
     }
 
@@ -134,7 +134,7 @@ class Mqx {
      * @param int $timeout
      * @return string|false
      */
-    public function brppGetValueByKeyWithTimeout($key,  $timeout = 3) {
+    public function brppGetValueByListKeyWithTimeout($key,  $timeout = 3) {
         return $this->redis->bRPopLPush($this->genKey($key), $this->genKey($key + 1), $timeout);
     }
     
@@ -143,7 +143,7 @@ class Mqx {
      * @param int $key
      * @param int $timeout
      */
-    public function getValueByKeyWithTimeout($key,  $timeout = 3){
+    public function getValueByListKeyWithTimeout($key,  $timeout = 3){
         return $this->redis->brPop($this->genKey($key), $timeout);
     }
     
@@ -154,7 +154,7 @@ class Mqx {
      * @param string $value
      * @return long|bool
      */
-    public function delByKeyAndValue($key, $value){
+    public function delByListKeyAndValue($key, $value){
         return $this->redis->lRem($this->genKey($key), $value, 0);
     }
 

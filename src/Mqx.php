@@ -48,6 +48,26 @@ class Mqx {
      *  value
      */
     const SET_VALUE_CALL_PARAMS_KEY = 'value';
+    
+    /**
+     * 
+     */
+    const FIRST_LIST_KEY = 0;
+    
+    /**
+     * 
+     */
+    const SECOND_LIST_KEY = 1;
+    
+    /**
+     * 
+     */
+    const THIRD_LIST_KEY = 2;
+    
+    /**
+     * 
+     */
+    const FOURTH_LIST_KEY = 3;
 
     
 

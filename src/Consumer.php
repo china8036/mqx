@@ -59,20 +59,21 @@ class Consumer extends Mqx {
     }
     
     /**
-     * 
-     * @param type $timeout
+     *  get faild msg
+     * @param int $timeout
+     * @param int $timeout
      * @return boolean
      */
-    public function getFaildMsg($not_deal_seconds = 3600, $timeout = 3){
+    public function getFaildMsg($out_seconds = 3600, $timeout = 3){
         $msg = $this->getValueByListKeyWithTimeout(Mqx::FOURTH_LIST_KEY, $timeout);
         if($msg == false){
             return false;
         }
         $mesage = new Message($msg);
-        if($mesage->time < (time() -  $not_deal_seconds) ){
+        if($mesage->time < (time() -  $out_seconds) ){
             return $mesage;
         }
-        // cant not think this is fail because it may be hava time to remove from the queue; 
+        // cant not think this is fail because it may be hava time to remove from the queue; so add it to the queue again; 
         $this->addValue2FormatKey(Mqx::FOURTH_LIST_KEY, $msg);
         return false;
     }

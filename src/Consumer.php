@@ -47,7 +47,7 @@ class Consumer extends Mqx {
     }
 
     /**
-     *  after done msg remove msg from next list
+     *  remove msg from next list after done
      * @param \Qqes\Mqx\Message $msg
      */
     public function doneMsg($msg) {
@@ -55,6 +55,26 @@ class Consumer extends Mqx {
             return;
         }
         $this->delByListKeyAndValue($msg->key + 1, $msg->payload);
-    }
 
+    }
+    
+    /**
+     * 
+     * @param type $timeout
+     * @return boolean
+     */
+    public function getFaildMsg($not_deal_seconds = 3600, $timeout = 3){
+        $msg = $this->getValueByListKeyWithTimeout(Mqx::FOURTH_LIST_KEY, $timeout);
+        if($msg == false){
+            return false;
+        }
+        $mesage = new Message($msg);
+        if($mesage->time < (time() -  $not_deal_seconds) ){
+            return $mesage;
+        }
+        // cant not think this is fail because it may be hava time to remove from the queue; 
+        $this->addValue2FormatKey(Mqx::FOURTH_LIST_KEY, $msg);
+        return false;
+    }
+    
 }

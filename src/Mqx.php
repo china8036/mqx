@@ -41,13 +41,19 @@ class Mqx {
     /**
      *  unqiue
      */
-    const SET_VALUE_UNIQUE_KEY = 'id';
+    const LIST_VALUE_UNIQUE_KEY = 'id';
     
     
     /**
      *  value
      */
-    const SET_VALUE_CALL_PARAMS_KEY = 'value';
+    const LIST_VALUE_CALL_PARAMS_KEY = 'value';
+    
+    
+    /**
+     * timestamp
+     */
+    const LIST_VALUE_TIMESTAMP_KEY = 'time';
     
     /**
      * 
@@ -141,8 +147,9 @@ class Mqx {
      */
     public function addFormatValue2Key($key,  $value){
         $format_value = [
-            self::SET_VALUE_UNIQUE_KEY => md5(uniqid() . rand()),
-            self::SET_VALUE_CALL_PARAMS_KEY  => $value
+            self::LIST_VALUE_UNIQUE_KEY => md5(uniqid() . rand()),
+            self::LIST_VALUE_TIMESTAMP_KEY => time(),
+            self::LIST_VALUE_CALL_PARAMS_KEY  => $value
         ];
        return $this->addValue2FormatKey($key, $format_value);
     }

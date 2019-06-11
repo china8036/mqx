@@ -18,6 +18,7 @@ class Message {
     public $id;
     public $key;
     public $message;
+    public $time;
     public $payload;
     protected $call_params;
 
@@ -28,14 +29,18 @@ class Message {
         if ($this->message === false) {
             throw new MqxException('wrong message format:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
-        if (!isset($this->message[Mqx::SET_VALUE_UNIQUE_KEY])) {
+        if (!isset($this->message[Mqx::LIST_VALUE_UNIQUE_KEY])) {
             throw new MqxException('not found id value:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
-        $this->id = $this->message[Mqx::SET_VALUE_UNIQUE_KEY];
-        if (!isset($this->message[Mqx::SET_VALUE_CALL_PARAMS_KEY])) {
+        $this->id = $this->message[Mqx::LIST_VALUE_UNIQUE_KEY];
+        if (!isset($this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY])) {
             throw new MqxException('not found call_params value:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
-        $this->call_params = $this->message[Mqx::SET_VALUE_CALL_PARAMS_KEY];
+        $this->call_params = $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY];
+        if(isset($this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY])){
+             throw new MqxException('not found timestamp value:' . $payload, MqxException::MESSAGE_EXCEPTION);
+        }
+        $this->time = $this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY];
     }
 
     /**

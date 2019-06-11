@@ -15,10 +15,6 @@ namespace Qqes\Mqx;
  */
 class Consumer extends Mqx {
 
-  
-
-
-
     /**
      * getMsg if not found value it will block util timeout or have value
      * brpp will get the value and move it to next list
@@ -41,7 +37,7 @@ class Consumer extends Mqx {
             return new Message($msg, $key);
         }
         //if above not found the value continue to get other list value
-       foreach ([Mqx::FIRST_LIST_KEY, Mqx::SECOND_LIST_KEY, Mqx::THIRD_LIST_KEY] as $key) {
+        foreach ([Mqx::FIRST_LIST_KEY, Mqx::SECOND_LIST_KEY, Mqx::THIRD_LIST_KEY] as $key) {
             $msg = $this->brppGetValueByListKeyWithTimeout($key, $timeout);
             if ($msg !== false) {
                 return new Message($msg, $key);
@@ -51,11 +47,14 @@ class Consumer extends Mqx {
     }
 
     /**
-     *  remove msg from back list
+     *  after done msg remove msg from next list
      * @param \Qqes\Mqx\Message $msg
      */
-    public function doneMsg(Message $msg) {
-        $this->delByKeyAndValue($key, $msg->payload);
+    public function doneMsg($msg) {
+        if (!$msg instanceof Message) {
+            return;
+        }
+        $this->delByListKeyAndValue($msg->key + 1, $msg->payload);
     }
 
 }

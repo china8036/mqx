@@ -1,0 +1,22 @@
+{
+    "name": "qqes/mqx",
+    "description": "Qqes  Message Queue",
+    "keywords": ["qqes", "mqx"],
+    "type": "library",
+    "homepage": "http://www.7724.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "QQES_ZHW",
+            "homepage": "http://www.7724.com"
+        }
+    ],
+  "require": {
+        "php": ">=5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Qqes\\Mqx\\": "src/"
+        }
+    }
+}

@@ -179,6 +179,8 @@ class Cpool {
                 continue;
             }
             $this->cptask->run($msg);
+            $consumer->doneMsg($msg);
+            
         }
     }
 

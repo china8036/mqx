@@ -58,22 +58,14 @@ class Mqx {
     /**
      * 
      */
-    const FIRST_LIST_KEY = 0;
+    const QUEUE_LIST_KEY = 0;
     
     /**
      * 
      */
-    const SECOND_LIST_KEY = 1;
+    const FAILED_LIST_KEY = 1;
     
-    /**
-     * 
-     */
-    const THIRD_LIST_KEY = 2;
-    
-    /**
-     * 
-     */
-    const FOURTH_LIST_KEY = 3;
+  
 
     
 

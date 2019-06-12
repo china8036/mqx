@@ -16,15 +16,13 @@ namespace Qqes\Mqx;
 class Message {
 
     public $id;
-    public $key;
     public $message;
     public $time;
     public $payload;
     protected $call_params;
 
-    function __construct($payload, $key) {
+    function __construct($payload) {
         $this->payload = $payload;
-        $this->key = $key;
         $this->message = unserialize($payload);
         if ($this->message === false) {
             throw new MqxException('wrong message format:' . $payload, MqxException::MESSAGE_EXCEPTION);
@@ -37,7 +35,7 @@ class Message {
             throw new MqxException('not found call_params value:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
         $this->call_params = $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY];
-        if(isset($this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY])){
+        if(!isset($this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY])){
              throw new MqxException('not found timestamp value:' . $payload, MqxException::MESSAGE_EXCEPTION);
         }
         $this->time = $this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY];

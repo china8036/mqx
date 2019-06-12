@@ -24,6 +24,6 @@ class Producer extends Mqx{
      * @return 1|0
      */
     public function queueCall($class, $method, array $args = []){
-        return $this->addFormatValue2Key(Mqx::FIRST_LIST_KEY, [Mqx::CLASS_KEY => $class, Mqx::METHOD_KEY => $method, Mqx::ARGS_KEY => $args]);
+        return $this->addFormatValue2Key(Mqx::QUEUE_LIST_KEY, [Mqx::CLASS_KEY => $class, Mqx::METHOD_KEY => $method, Mqx::ARGS_KEY => $args]);
     }
 }

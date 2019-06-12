@@ -12,10 +12,12 @@ include '../src/Producer.php';
 include '../src/Message.php';
 include '../src/MqxException.php';
 
-$mqx = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
+$consumer = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
 
 
-$message = $mqx->getMsg(1);
+$message = $consumer->getMsg(1);
 
 var_dump($message);
-$mqx->doneMsg($message);
+$consumer->doneMsg($message);
+
+var_dump($consumer->getFaildMsg(12));

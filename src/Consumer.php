@@ -51,15 +51,16 @@ class Consumer extends Mqx {
      */
     public function getFaildMsg($out_seconds = 3600, $timeout = 3){
         $msg = $this->getValueByListKeyWithTimeout(Mqx::FAILED_LIST_KEY, $timeout);
-        if($msg == false){
+        if($msg == false || !isset($msg[1])){
             return false;
         }
-        $mesage = new Message($msg);
-        if($mesage->time < (time() -  $out_seconds) ){
-            return $mesage;
+        $payload = $msg[1];
+        $message = new Message($payload);
+        if($message->time < (time() -  $out_seconds) ){
+            return $message;
         }
         // cant not think this is fail because it may be hava time to remove from the queue; so add it to the queue again; 
-        $this->addValue2FormatKey(Mqx::FAILED_LIST_KEY, $msg);
+        $this->addValue2FormatKey(Mqx::FAILED_LIST_KEY, $payload);
         return false;
     }
     

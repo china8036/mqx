@@ -15,9 +15,35 @@ include '../src/MqxException.php';
 $consumer = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
 
 
-$message = $consumer->getMsg(1);
+while(true){
+    $message = $consumer->getMsg(1);
+    if($message == false){
+        continue;
+    }
+    $pid = pcntl_fork();
+    if($pid == -1){
+        echo 'system error:can not fork' . PHP_EOL;
+        exit;
+    }elseif($pid > 0){ //parent process can get child pid
+        echo $pid . ' begin' . PHP_EOL;
+        pcntl_waitpid($pid, $status);
+         echo $pid . ' exit' . PHP_EOL;
+        if(pcntl_wifexited($status)){
+            $consumer->doneMsg($message);
+            echo $pid . ' done' . PHP_EOL;
+        }
+    }else{//child process
+        var_dump($message);
+        exit;
+    }
+    
+}
 
-var_dump($message);
-$consumer->doneMsg($message);
 
-var_dump($consumer->getFaildMsg(12));
+//if($message !== false){
+//    
+//}
+//var_dump($message);
+//$consumer->doneMsg($message);
+//
+//var_dump($consumer->getFaildMsg(12));

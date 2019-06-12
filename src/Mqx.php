@@ -83,6 +83,9 @@ class Mqx {
 
     //put your code here
     function __construct($redis_host, $redis_port = 6379, $passwd = '', $project = 'default') {
+        if (!class_exists('\Redis')) {
+            throw new MqxException('Can not found Redis php extension, Please visit url http://pecl.php.net/package/redis to install it');
+        }
         try {
             $this->redis = new Redis();
             $this->redis->connect($redis_host, $redis_port);

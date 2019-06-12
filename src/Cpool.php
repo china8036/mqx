@@ -171,7 +171,7 @@ class Cpool {
             if ($msg == false) {
                 continue;
             }
-            $this->cptask->fail($msg);
+            $this->cptask->dealFaildTask($msg);
         }
     }
 
@@ -185,7 +185,7 @@ class Cpool {
             if ($msg == false) {
                 continue;
             }
-            $this->cptask->run($msg);
+            $this->cptask->runTask($msg);
             $consumer->doneMsg($msg);
             
         }

@@ -16,9 +16,9 @@ namespace Qqes\Mqx;
 interface CpoolTask {
 
     //put your code here
-    public function run(Message $message);
+    public function runTask(Message $message);
 
-    public function fail(Message $message);
+    public function dealFaildTask(Message $message);
     
     
 }

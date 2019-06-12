@@ -14,14 +14,15 @@ require_once '../src/CpoolTask.php';
  */
 class Task implements \Qqes\Mqx\CpoolTask{
 
-    public function fail(\Qqes\Mqx\Message $message) {
+    public function dealFaildTask(\Qqes\Mqx\Message $message) {
         echo 'faile message' . PHP_EOL;
         var_dump($message);
     }
 
-    public function run(\Qqes\Mqx\Message $message) {
+    public function runTask(\Qqes\Mqx\Message $message) {
         echo 'new message' . PHP_EOL;
         var_dump($message);
     }
+
 
 }

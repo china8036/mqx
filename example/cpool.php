@@ -17,7 +17,7 @@ require_once '../src/CpoolTask.php';
 
 
 
-$consumer = new Qqes\Mqx\Consumer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
-$cpool = new Qqes\Mqx\Cpool($consumer, new Task());
-$cpool->run();
+$cpool = new Qqes\Mqx\Cpool(new Task());
+$cpool->setConsumerConfig('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net'
+        )->run();
 

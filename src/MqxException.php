@@ -22,7 +22,15 @@ class MqxException extends Exception{
      */
     const REDIS_CONNECT_ERROR = -1;
     
-    
+    /**
+     * message decode error
+     */
     const MESSAGE_EXCEPTION = -2;
+    
+    
+    /**
+     * system error
+     */
+    const SYSTEM_ERROR = -3;
     
 }

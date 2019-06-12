@@ -38,9 +38,8 @@ class Cpool {
      *
      * @var integer 
      */
-    protected  $new_job_thread_num;
-    
-    
+    protected $new_job_thread_num;
+
     /**
      *
      * @var integer
@@ -60,8 +59,12 @@ class Cpool {
     /**
      * 
      */
-    const THREAD_MAIN = 'mqx_thread_for manager';
-
+    const THREAD_MAIN = 'mqx_thread_for_manager';
+    
+    /**
+     * 
+     */
+    const THREAD_TASK_RUN = 'mqx_thread_for_etask_running';
 
     /**
      * 
@@ -76,15 +79,13 @@ class Cpool {
         $this->cptask = $cptask;
         $this->faild_message_seconds = $faild_message_seconds;
     }
-    
-    
+
     public static function killAllThread() {
         $cmd = "ps -ef|grep 'mqx_thread_for'|awk '{print $2}'|xargs kill";
         $ret = shell_exec($cmd);
         return $ret;
     }
-    
-    
+
     /**
      *  set consumer config
      * @param string $redis_host
@@ -93,19 +94,19 @@ class Cpool {
      * @param string $project
      * @return $this
      */
-   public function setConsumerConfig($redis_host, $redis_port = 6379, $passwd = '', $project = 'default'){
-       $this->consumerConfig = func_get_args();
-       return $this;
-   }
+    public function setConsumerConfig($redis_host, $redis_port = 6379, $passwd = '', $project = 'default') {
+        $this->consumerConfig = func_get_args();
+        return $this;
+    }
 
     /**
      * run whit gen a damon thread to manage child thread
      */
     public function run() {
-        if(empty($this->consumerConfig)){
-            throw  new MqxException('not set consumer config', MqxException::REDIS_CONNECT_ERROR);
+        if (empty($this->consumerConfig)) {
+            throw new MqxException('not set consumer config', MqxException::REDIS_CONNECT_ERROR);
         }
-        $this->createThread(function(){//gen a daemon thread
+        $this->createThread(function() {//gen a daemon thread
             while (true) {
                 $this->holdThread();
                 sleep(10);
@@ -119,13 +120,13 @@ class Cpool {
     protected function holdThread() {
         $faild_job_thread_num = $this->checkThreadNum(self::THREAD_FOR_FAILD_TASK);
         if ($faild_job_thread_num < $this->faild_job_thread_num) {
-            for($i=0; $i<($this->faild_job_thread_num-$faild_job_thread_num);$i++){
+            for ($i = 0; $i < ($this->faild_job_thread_num - $faild_job_thread_num); $i++) {
                 $this->createThread([$this, 'dealFailTaskMessage'], self::THREAD_FOR_FAILD_TASK);
             }
         }
         $new_task_thread = $this->checkThreadNum(self::THREAD_FOR_RUN_TASK);
         if ($new_task_thread < $this->new_job_thread_num) {
-            for($i=0; $i<($this->new_job_thread_num-$new_task_thread);$i++){
+            for ($i = 0; $i < ($this->new_job_thread_num - $new_task_thread); $i++) {
                 $this->createThread([$this, 'runTask'], self::THREAD_FOR_RUN_TASK);
             }
         }
@@ -136,7 +137,7 @@ class Cpool {
      * @param callback $child_callback
      * @throws MqxException
      */
-    protected function createThread($child_callback, $child_key) {
+    protected function createThread(callable $child_callback, $child_key = '',  $args = []) {
         $pid = pcntl_fork();
         if ($pid < 0) {// create thread error
             throw new MqxException('can not creat thread ', MqxException::SYSTEM_ERROR);
@@ -144,12 +145,14 @@ class Cpool {
         if ($pid > 0) {// parent thread
             return;
         } else {//child thread to just get faile job
-            cli_set_process_title($child_key);
-            $child_callback();
+            if ($child_key) {
+                cli_set_process_title($child_key);
+            }
+            $child_callback(...$args);
             exit; // exit
         }
     }
-    
+
     /**
      * check thread num by key
      * @param type $child_key
@@ -165,13 +168,14 @@ class Cpool {
      * deal faild message
      */
     protected function dealFailTaskMessage() {
-       $consumer = new Consumer(...$this->consumerConfig);
+        $consumer = new Consumer(...$this->consumerConfig);
         while (true) {
             $msg = $consumer->getFaildMsg($this->faild_message_seconds, 3);
             if ($msg == false) {
                 continue;
             }
-            $this->cptask->dealFaildTask($msg);
+            $this->createThread([$this, 'dealEachFaildTask'], self::THREAD_TASK_RUN, [$msg]);
+             pcntl_wait($status);
         }
     }
 
@@ -185,10 +189,28 @@ class Cpool {
             if ($msg == false) {
                 continue;
             }
-            $this->cptask->runTask($msg);
-            $consumer->doneMsg($msg);
-            
+            $this->createThread([$this, 'runEachTask'], self::THREAD_TASK_RUN, [$msg]);
+            pcntl_wait($status);
+            if (pcntl_wifexited($status)) {
+                $consumer->doneMsg($msg);
+            }
         }
+    }
+    
+    /**
+     * 
+     * @param type $msg
+     */
+    protected function runEachTask($msg){
+        $this->cptask->runTask($msg);
+    }
+    
+    /**
+     * 
+     * @param type $msg
+     */
+    protected function dealEachFaildTask($msg){
+        $this->cptask->dealFaildTask($msg);
     }
 
 }

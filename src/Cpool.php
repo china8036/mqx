@@ -78,6 +78,13 @@ class Cpool {
     }
     
     
+    public static function killAllThread() {
+        $cmd = "ps -ef|grep 'mqx_thread_for'|awk '{print $2}'|xargs kill";
+        $ret = shell_exec($cmd);
+        return $ret;
+    }
+    
+    
     /**
      *  set consumer config
      * @param string $redis_host

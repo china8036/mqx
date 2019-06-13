@@ -14,6 +14,49 @@ namespace Qqes\Mqx;
  * @author wang
  */
 class Message {
+    
+      /**
+     * class
+     */
+    const CLASS_KEY = 'class';
+    /**
+     * method
+     */
+    const METHOD_KEY = 'method';
+    
+    /**
+     * args
+     */
+    const ARGS_KEY = 'args';
+    
+    
+    /**
+     *  unqiue
+     */
+    const LIST_VALUE_UNIQUE_KEY = 'id';
+    
+    
+    /**
+     *  value
+     */
+    const LIST_VALUE_CALL_PARAMS_KEY = 'value';
+    
+    
+    /**
+     * timestamp
+     */
+    const LIST_VALUE_TIMESTAMP_KEY = 'time';
+    
+    /**
+     * 
+     */
+    const LIST_VALUE_DEALTIME_KEY = 'dealtime';
+    
+    /**
+     * retry times
+     */
+    const LIST_VALUE_RETRY_TIMES_KEY = 'retrytimes';
+    
 
     public $message = [];
 
@@ -31,10 +74,10 @@ class Message {
      * @throws MqxException
      */
     public function getId() {
-        if (!isset($this->message[Mqx::LIST_VALUE_UNIQUE_KEY])) {
+        if (!isset($this->message[self::LIST_VALUE_UNIQUE_KEY])) {
             throw new MqxException('not found id value:' . $this->encode(), MqxException::MESSAGE_EXCEPTION);
         }
-        return $this->message[Mqx::LIST_VALUE_UNIQUE_KEY];
+        return $this->message[self::LIST_VALUE_UNIQUE_KEY];
     }
 
     /**
@@ -43,10 +86,10 @@ class Message {
      * @throws MqxException
      */
     public function getTime() {
-        if (!isset($this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY])) {
+        if (!isset($this->message[self::LIST_VALUE_TIMESTAMP_KEY])) {
             throw new MqxException('not found time value:' . $this->encode(), MqxException::MESSAGE_EXCEPTION);
         }
-        return $this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY];
+        return $this->message[self::LIST_VALUE_TIMESTAMP_KEY];
     }
 
     /**
@@ -55,22 +98,35 @@ class Message {
      * @throws MqxException
      */
     public function getDealTime() {
-        if (!isset($this->message[Mqx::LIST_VALUE_DEALTIME_KEY])) {
+        if (!isset($this->message[self::LIST_VALUE_DEALTIME_KEY])) {
             throw new MqxException('not found deal time  value:' . $this->encode(), MqxException::MESSAGE_EXCEPTION);
         }
-        return $this->message[Mqx::LIST_VALUE_DEALTIME_KEY];
+        return $this->message[self::LIST_VALUE_DEALTIME_KEY];
     }
 
+    /**
+     * getRetryTimes
+     * @return int
+     * @throws MqxException
+     */
+    public function getRetryTimes() {
+        if (!isset($this->message[self::LIST_VALUE_RETRY_TIMES_KEY])) {
+            throw new MqxException('not found retry times  value:' . $this->encode(), MqxException::MESSAGE_EXCEPTION);
+        }
+        return $this->message[self::LIST_VALUE_RETRY_TIMES_KEY];
+    }
+    
+    
     /**
      * 
      * @return type
      * @throws Exception
      */
     public function getClass() {
-        if (!isset($this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::CLASS_KEY])) {
+        if (!isset($this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::CLASS_KEY])) {
             throw new MqxException('Can not found call class:' . $this->message, MqxException::MESSAGE_EXCEPTION);
         }
-        return $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::CLASS_KEY];
+        return $this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::CLASS_KEY];
     }
 
     /**
@@ -79,10 +135,10 @@ class Message {
      * @throws Exception
      */
     public function getMethod() {
-        if (!isset($this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::METHOD_KEY])) {
+        if (!isset($this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::METHOD_KEY])) {
             throw new Exception('Can not found call method:' . $this->message, MqxException::MESSAGE_EXCEPTION);
         }
-        return $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::METHOD_KEY];
+        return $this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::METHOD_KEY];
     }
 
     /**
@@ -90,10 +146,10 @@ class Message {
      * @return type
      */
     public function getArgs() {
-        if (!isset($this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::ARGS_KEY])) {
+        if (!isset($this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::ARGS_KEY])) {
             return [];
         }
-        return $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::ARGS_KEY];
+        return $this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::ARGS_KEY];
     }
 
     /**
@@ -101,7 +157,7 @@ class Message {
      * @param int $id
      */
     public function setId($id) {
-        $this->dealtime = $this->message[Mqx::LIST_VALUE_UNIQUE_KEY] = $id;
+        $this->dealtime = $this->message[self::LIST_VALUE_UNIQUE_KEY] = $id;
         return $this;
     }
 
@@ -110,7 +166,7 @@ class Message {
      * @param string $class
      */
     public function setClass($class) {
-        $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::CLASS_KEY] = $class;
+        $this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::CLASS_KEY] = $class;
         return $this;
     }
 
@@ -119,7 +175,7 @@ class Message {
      * @param string $method
      */
     public function setMethod($method) {
-        $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::METHOD_KEY] = $method;
+        $this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::METHOD_KEY] = $method;
         return $this;
     }
 
@@ -128,7 +184,7 @@ class Message {
      * @param array args
      */
     public function setArgs(array $args = []) {
-        $this->message[Mqx::LIST_VALUE_CALL_PARAMS_KEY][Mqx::ARGS_KEY] = $args;
+        $this->message[self::LIST_VALUE_CALL_PARAMS_KEY][self::ARGS_KEY] = $args;
         return $this;
     }
 
@@ -137,7 +193,7 @@ class Message {
      * @param int $time
      */
     public function setTime($time) {
-        $this->message[Mqx::LIST_VALUE_TIMESTAMP_KEY] = $time;
+        $this->message[self::LIST_VALUE_TIMESTAMP_KEY] = $time;
         return $this;
     }
 
@@ -146,7 +202,16 @@ class Message {
      * @param int $time
      */
     public function setDealTime($time) {
-        $this->message[Mqx::LIST_VALUE_DEALTIME_KEY] = $time;
+        $this->message[self::LIST_VALUE_DEALTIME_KEY] = $time;
+        return $this;
+    }
+    
+    /**
+     *  set retry times
+     * @param int $times
+     */
+    public function setRetryTimes($times) {
+        $this->message[self::LIST_VALUE_RETRY_TIMES_KEY] = $times;
         return $this;
     }
 

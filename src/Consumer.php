@@ -54,7 +54,7 @@ class Consumer extends Mqx {
      * @return boolean
      */
     public function getFaildMsg($timeout = 3600){
-        $msg = $this->getLastValueByListKey(Mqx::FAILED_LIST_KEY);
+        $msg = $this->getLastValueByListKey(Mqx::FAILED_LIST_KEY);//can not del if from list and than add to list this can cause doneMsg cant found del msg bewtween del and add interval 
         if(empty($msg[0])){
             return false;
         }

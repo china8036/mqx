@@ -23,43 +23,7 @@ class Mqx {
      */
     const MQ_SET_KEY_PRE = 'qqes_mqx_';
     
-    /**
-     * class
-     */
-    const CLASS_KEY = 'class';
-    /**
-     * method
-     */
-    const METHOD_KEY = 'method';
-    
-    /**
-     * args
-     */
-    const ARGS_KEY = 'args';
-    
-    
-    /**
-     *  unqiue
-     */
-    const LIST_VALUE_UNIQUE_KEY = 'id';
-    
-    
-    /**
-     *  value
-     */
-    const LIST_VALUE_CALL_PARAMS_KEY = 'value';
-    
-    
-    /**
-     * timestamp
-     */
-    const LIST_VALUE_TIMESTAMP_KEY = 'time';
-    
-    /**
-     * 
-     */
-    const LIST_VALUE_DEALTIME_KEY = 'dealtime';
-    
+ 
     /**
      * 
      */

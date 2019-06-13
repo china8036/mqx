@@ -12,4 +12,7 @@ include '../src/Producer.php';
 include '../src/Message.php';
 include '../src/MqxException.php';
 $pro = new Qqes\Mqx\Producer('192.168.1.200', '56379', '2d524045429941cc15f59e@pipaw.net');
-$pro->queueCall('Test', 'run', [time()]);
+//while(true){
+    $pro->queueCall('Test', 'run', [time()]);
+//    sleep(1);
+//}

@@ -58,6 +58,11 @@ class Mqx {
     /**
      * 
      */
+    const LIST_VALUE_DEALTIME_KEY = 'dealtime';
+    
+    /**
+     * 
+     */
     const QUEUE_LIST_KEY = 0;
     
     /**
@@ -137,16 +142,16 @@ class Mqx {
     /**
      *  add format value  to format key list
      * @param type $key
-     * @param type $value
+     * @param type $class
+     * @param type $method
+     * @param type $args
      * @return type
      */
-    public function addFormatValue2Key($key,  $value){
-        $format_value = [
-            self::LIST_VALUE_UNIQUE_KEY => md5(uniqid() . rand()),
-            self::LIST_VALUE_TIMESTAMP_KEY => time(),
-            self::LIST_VALUE_CALL_PARAMS_KEY  => $value
-        ];
-       return $this->addValue2FormatKey($key, $format_value);
+    public function addFormatValue2Key($key,  $class, $method, $args = []){
+        $message = new Message();
+        $message->setId(md5(uniqid() . rand()))->setClass($class)->setMethod($method)->setArgs($args);
+        $message->setTime(time())->setDealTime(0);
+       return $this->addValue2FormatKey($key, $message->toString());
     }
     
 
@@ -161,13 +166,29 @@ class Mqx {
     }
     
     /**
-     *  get and remove the last value
+     * 
+     * @param string $key
+     * @param int $timeout
+     * @return boolean
+     */
+    public function brpopValueByLListKeyWithTimeout($key, $timeout = 3){
+        $ret =  $this->redis->brPop($this->genKey($key), $timeout);
+        if(empty($ret) || !isset($ret[1])){
+            return false;
+        }
+        return $ret[1];
+    }
+    
+    
+    /**
+     *  get  the last value
      * @param int $key
      * @param int $timeout
      */
-    public function getValueByListKeyWithTimeout($key,  $timeout = 3){
-        return $this->redis->brPop($this->genKey($key), $timeout);
+    public function getLastValueByListKey($key){
+        return $this->redis->lRange($this->genKey($key), -1, -1);
     }
+    
     
     
     /**
@@ -177,7 +198,7 @@ class Mqx {
      * @return long|bool
      */
     public function delByListKeyAndValue($key, $value){
-        return $this->redis->lRem($this->genKey($key), $value, 0);
+        return $this->redis->lRem($this->genKey($key), $value, 1);
     }
 
 }

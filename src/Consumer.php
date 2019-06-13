@@ -24,11 +24,16 @@ class Consumer extends Mqx {
      * @return type
      */
     public function getMsg($timeout = 3) {
-        $msg = $this->brppGetValueByListKeyWithTimeout(Mqx::QUEUE_LIST_KEY, $timeout);
+        $msg = $this->brpopValueByLListKeyWithTimeout(Mqx::QUEUE_LIST_KEY, $timeout);
         if ($msg == false) {
             return false;
         }
-       return new Message($msg);
+        $message = new Message($msg);
+        $message->setDealTime(time());
+        if(!$this->addValue2FormatKey(Mqx::FAILED_LIST_KEY, $message->toString())){// and to faild queue but if call done method it will be remove
+            throw new MqxException('can not add msg to redis:' . $message->toString(), MqxException::REDIS_CONNECT_ERROR);
+        }
+        return $message;
     }
 
     /**
@@ -39,29 +44,35 @@ class Consumer extends Mqx {
         if (!$msg instanceof Message) {
             return;
         }
-        $this->delByListKeyAndValue(Mqx::FAILED_LIST_KEY, $msg->payload);
+        return $this->delByListKeyAndValue(Mqx::FAILED_LIST_KEY, $msg->toString());
 
     }
     
     /**
      *  get faild msg
-     * @param int $out_seconds  seconds after join the failed queue 
-     * @param int $timeout
+     * @param int $timeout  seconds after join the failed queue 
      * @return boolean
      */
-    public function getFaildMsg($out_seconds = 3600, $timeout = 3){
-        $msg = $this->getValueByListKeyWithTimeout(Mqx::FAILED_LIST_KEY, $timeout);
-        if($msg == false || !isset($msg[1])){
+    public function getFaildMsg($timeout = 3600){
+        $msg = $this->getLastValueByListKey(Mqx::FAILED_LIST_KEY);
+        if(empty($msg[0])){
             return false;
         }
-        $payload = $msg[1];
-        $message = new Message($payload);
-        if($message->time < (time() -  $out_seconds) ){
+        $message = new Message($msg[0]);
+        if($message->getDealTime() < (time() -  $timeout) ){
             return $message;
         }
-        // cant not think this is fail because it may be hava time to remove from the queue; so add it to the queue again; 
-        $this->addValue2FormatKey(Mqx::FAILED_LIST_KEY, $payload);
         return false;
+    }
+    
+    
+    /**
+     * del faild msg
+     * @param \Qqes\Mqx\Message $msg
+     * @return type
+     */
+    public function delFaildMsg(Message $msg){
+        return $this->delByListKeyAndValue(Mqx::FAILED_LIST_KEY, $msg->toString());
     }
     
 }

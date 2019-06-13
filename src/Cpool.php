@@ -170,12 +170,16 @@ class Cpool {
     protected function dealFailTaskMessage() {
         $consumer = new Consumer(...$this->consumerConfig);
         while (true) {
-            $msg = $consumer->getFaildMsg($this->faild_message_seconds, 3);
+            sleep(1);
+            $msg = $consumer->getFaildMsg($this->faild_message_seconds);
             if ($msg == false) {
                 continue;
             }
             $this->createThread([$this, 'dealEachFaildTask'], self::THREAD_TASK_RUN, [$msg]);
              pcntl_wait($status);
+            if (pcntl_wifexited($status)) {
+                $consumer->delFaildMsg($msg);
+            }
         }
     }
 

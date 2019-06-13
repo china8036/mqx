@@ -19,7 +19,7 @@ while(true){
     $message = $consumer->getMsg(1);
     if($message == false){
         continue;
-    }
+}
     $pid = pcntl_fork();
     if($pid == -1){
         echo 'system error:can not fork' . PHP_EOL;
@@ -36,7 +36,7 @@ while(true){
         var_dump($message);
         exit;
     }
-    
+
 }
 
 

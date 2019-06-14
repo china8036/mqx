@@ -114,7 +114,7 @@ class Mqx {
     public function addFormatValue2Key($key,  $class, $method, $args = []){
         $message = new Message();
         $message->setId(md5(uniqid() . rand()))->setClass($class)->setMethod($method)->setArgs($args);
-        $message->setTime(time())->setDealTime(0);
+        $message->setTime(time())->setDealTime(0)->setRetryTimes(0);
        return $this->addValue2FormatKey($key, $message->toString());
     }
     

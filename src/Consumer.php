@@ -30,7 +30,7 @@ class Consumer extends Mqx {
         }
         $message = new Message($msg);
         $message->setDealTime(time());
-        if(!$this->addValue2FormatKey(Mqx::FAILED_LIST_KEY, $message->toString())){// and to faild queue but if call done method it will be remove
+        if (!$this->addValue2FormatKey(Mqx::FAILED_LIST_KEY, $message->toString())) {// and to faild queue but if call done method it will be remove
             throw new MqxException('can not add msg to redis:' . $message->toString(), MqxException::REDIS_CONNECT_ERROR);
         }
         return $message;
@@ -45,34 +45,38 @@ class Consumer extends Mqx {
             return;
         }
         return $this->delByListKeyAndValue(Mqx::FAILED_LIST_KEY, $msg->toString());
-
     }
-    
+
     /**
      *  get faild msg
      * @param int $timeout  seconds after join the failed queue 
      * @return boolean
      */
-    public function getFaildMsg($timeout = 3600){
-        $msg = $this->getLastValueByListKey(Mqx::FAILED_LIST_KEY);//can not del if from list and than add to list this can cause doneMsg cant found del msg bewtween del and add interval 
-        if(empty($msg[0])){
+    public function getFaildMsg($timeout = 3600) {
+        $msg = $this->getLastValueByListKey(Mqx::FAILED_LIST_KEY); //can not del if from list and than add to list this can cause doneMsg cant found del msg bewtween del and add interval 
+        if (empty($msg[0])) {
             return false;
         }
         $message = new Message($msg[0]);
-        if($message->getDealTime() < (time() -  $timeout) ){
+        if ($message->getDealTime() < (time() - $timeout)) {
+            $this->delByListKeyAndValue(Mqx::FAILED_LIST_KEY, $message->toString()); //del faild list and add it to head
+            $retry_times = $message->getRetryTimes();
+            if ($retry_times < 3) {
+                $message->setRetryTimes($message->getRetryTimes() + 1); // add retry time
+                $this->addValue2FormatKey(Mqx::FAILED_LIST_KEY, $message->toString()); // add to faild list head to try again
+            }
             return $message;
         }
         return false;
     }
-    
-    
+
     /**
      * del faild msg
      * @param \Qqes\Mqx\Message $msg
      * @return type
      */
-    public function delFaildMsg(Message $msg){
+    public function delFaildMsg(Message $msg) {
         return $this->delByListKeyAndValue(Mqx::FAILED_LIST_KEY, $msg->toString());
     }
-    
+
 }

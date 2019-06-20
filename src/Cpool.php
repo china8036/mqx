@@ -47,25 +47,31 @@ class Cpool {
     protected $faild_job_thread_num;
 
     /**
-     * 
+     * project
+     * @var string 
      */
-    const THREAD_FOR_FAILD_TASK = 'mqx_thread_for_failed';
-
-    /**
-     * 
-     */
-    const THREAD_FOR_RUN_TASK = 'mqx_thread_for_new';
-
-    /**
-     * 
-     */
-    const THREAD_MAIN = 'mqx_thread_for_manager';
+    protected $project;
     
     /**
      * 
      */
-    const THREAD_TASK_RUN = 'mqx_thread_for_etask_running';
+    const THREAD_FOR_FAILD_TASK = 'mqx_thread_for_%s_failed';
 
+    /**
+     * 
+     */
+    const THREAD_FOR_RUN_TASK = 'mqx_thread_for_%s_new';
+
+    /**
+     * 
+     */
+    const THREAD_MAIN = 'mqx_thread_for_%s_manager';
+    
+    /**
+     * 
+     */
+    const THREAD_TASK_RUN = 'mqx_thread_for_%s_etask_running';
+    
     /**
      * 
      * @param \Qqes\Mqx\CpoolTask $cptask
@@ -85,6 +91,17 @@ class Cpool {
         $ret = shell_exec($cmd);
         return $ret;
     }
+    
+    /**
+     * stop
+     * @return type
+     */
+    public function stop(){
+        $thread_key = 'mqx_thread_for_' . $this->project ;
+        $cmd = "ps -ef|grep '{$thread_key}'|awk '{print $2}'|xargs kill";
+        $ret = shell_exec($cmd);
+        return $ret;
+    }
 
     /**
      *  set consumer config
@@ -96,6 +113,7 @@ class Cpool {
      */
     public function setConsumerConfig($redis_host, $redis_port = 6379, $passwd = '', $project = 'default') {
         $this->consumerConfig = func_get_args();
+        $this->project = $project;
         return $this;
     }
 
@@ -138,6 +156,7 @@ class Cpool {
      * @throws MqxException
      */
     protected function createThread(callable $child_callback, $child_key = '',  $args = []) {
+        $thread_key = $this->formatThreadName($child_key);
         $pid = pcntl_fork();
         if ($pid < 0) {// create thread error
             throw new MqxException('can not creat thread ', MqxException::SYSTEM_ERROR);
@@ -145,12 +164,21 @@ class Cpool {
         if ($pid > 0) {// parent thread
             return;
         } else {//child thread to just get faile job
-            if ($child_key) {
-                cli_set_process_title($child_key);
+            if ($thread_key) {
+                cli_set_process_title($thread_key);
             }
             $child_callback(...$args);
             exit; // exit
         }
+    }
+    
+    /**
+     * format thread
+     * @param type $key
+     * @return type
+     */
+    protected function formatThreadName($key){
+        return sprintf($key, $this->project);
     }
 
     /**
@@ -159,9 +187,10 @@ class Cpool {
      * @return type
      */
     protected function checkThreadNum($child_key) {
-        $cmd = 'ps axu|grep "' . $child_key . '"|grep -v "grep"|wc -l';
+        $thread_key = $this->formatThreadName($child_key);
+        $cmd = 'ps axu|grep "' . $thread_key . '"|grep -v "grep"|wc -l';
         $ret = shell_exec($cmd);
-        return $ret;
+        return intval($ret);
     }
 
     /**
